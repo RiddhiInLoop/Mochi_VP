@@ -1,0 +1,844 @@
+/* ============================================================
+   MOCHI – DESKTOP PET  |  Main Stylesheet
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   1. CSS VARIABLES (Design Tokens)
+   - All colors are stored here as custom properties
+   - This makes it easy to retheme the whole app from one place
+   ------------------------------------------------------------ */
+:root {
+  box-sizing: border-box;
+
+  /* Safe-area padding for notched screens (iOS, etc.) */
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+
+  --bg:   #f3dcd9;   /* Page background (soft pink) */
+  --win:  #fbe9e0;   /* Window background (cream) */
+  --bar:  #f7c7c4;   /* Title bar color (light rose) */
+  --ac:   #f4837d;   /* Accent / primary action color (coral) */
+  --tx:   #4a3238;   /* Main text color (dark rose-brown) */
+  --card: #fffaf6;   /* Card / panel background (off-white) */
+}
+
+html {
+  /* Prevents content from hiding under the safe-area notch on scroll */
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+
+
+/* ------------------------------------------------------------
+   2. GLOBAL RESET & BASE STYLES
+   - box-sizing: border-box means padding/border are INCLUDED
+     in the element's width — prevents layout overflow bugs
+   ------------------------------------------------------------ */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--tx);
+  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif; /* Modern rounded font */
+  display: flex;
+  align-items: center;      /* Vertically center the window card */
+  justify-content: center;  /* Horizontally center the window card */
+  padding: 12px;
+}
+
+/* Mini-mode body has a deep blue gradient background */
+body.mini {
+  background: linear-gradient(135deg, #0b3d91, #1f6fe0 60%, #0a2a6b);
+}
+
+
+/* ------------------------------------------------------------
+   3. MAIN WINDOW CONTAINER (.win)
+   - This is the app "window" card sitting in the center
+   - Uses Flexbox column so all screens stack vertically
+   - overflow:hidden clips everything to the rounded corners
+   - position:relative lets child elements use absolute positioning
+     relative to this container
+   ------------------------------------------------------------ */
+.win {
+  width: 100%;
+  max-width: 380px;
+  height: 640px;
+  max-height: 94vh;
+  background: var(--win);
+  border: 2px solid #e9b9b4;
+  border-radius: 14px;
+  overflow: hidden;           /* Clips children to rounded corners */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 8px 24px #b9808033;
+}
+
+
+/* ------------------------------------------------------------
+   4. TITLE BAR (.tb)
+   - Mimics a macOS-style window title bar
+   - The <i> tags become the three decorative traffic-light dots
+   - margin-left:auto on buttons pushes them to the far right
+     using the Flexbox auto-margin trick
+   ------------------------------------------------------------ */
+.tb {
+  height: 34px;
+  background: var(--bar);
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 6px;
+  flex: none; /* Don't grow/shrink — fixed height */
+}
+
+/* The three decorative circles (like macOS close/min/max dots) */
+.tb i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;          /* Makes it a perfect circle */
+  border: 2px solid #fff;
+  display: block;
+}
+
+/* The clickable buttons in the title bar (Minimize / Reset) */
+.tb b {
+  margin-left: auto;           /* First button gets pushed to the right */
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  background: #fff9;           /* White at ~60% opacity */
+  text-align: center;
+  font-size: 12px;
+  line-height: 20px;
+  cursor: pointer;
+  margin-left: 6px;
+}
+
+/* The very first <b> pushes itself (and the rest) to the right end */
+.tb b:first-of-type {
+  margin-left: auto;
+}
+
+
+/* ------------------------------------------------------------
+   5. SCREEN SYSTEM (.scr)
+   - All screens (adopt, room, game, food, sleep) exist in the
+     DOM at all times but are hidden with display:none
+   - JavaScript adds the 'on' class to show the active screen
+   - This is our zero-framework client-side routing!
+   ------------------------------------------------------------ */
+.scr {
+  display: none;          /* Hidden by default */
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  position: relative;
+}
+
+.scr.on {
+  display: flex;          /* JS adds this class to show a screen */
+}
+
+/* Basic heading resets */
+h1, h2 { margin: 0; }
+.c { text-align: center; }
+
+/* Strip default button styles so we can style from scratch */
+button {
+  font: inherit;
+  cursor: pointer;
+  border: 0;
+}
+
+/* Big primary CTA button (e.g. the ADOPT button) */
+.big {
+  background: var(--ac);
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 1px;
+  border-radius: 10px;
+  padding: 12px;
+  margin: 8px 22px 0;
+  font-size: 17px;
+}
+
+
+/* ============================================================
+   SCREENS
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   6. ADOPT SCREEN (#adopt)
+   - The welcome / pet-selection screen shown on first launch
+   ------------------------------------------------------------ */
+#adopt {
+  padding: 14px 22px;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+#adopt h1 {
+  font-size: 26px;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+/* Pet name text input */
+#adopt input {
+  width: 100%;
+  padding: 12px;
+  border: 1.5px solid #ead2cc;
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+  font-size: 16px;
+  color: var(--tx);
+}
+
+/* Row of pet-type selector cards */
+.pick {
+  display: flex;
+  gap: 8px !important;
+  width: 100%;
+}
+
+.pick div {
+  flex: 1;
+  background: #fdeae6;
+  border: 2px solid #eddad3;
+  border-radius: 14px;
+  padding: 6px 0 4px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* The SVG pet preview inside each picker card */
+.pick svg {
+  width: 50px;
+  height: 50px;
+  display: block;
+  margin: auto;
+}
+
+/* Highlight the currently selected pet */
+.pick div.sel {
+  border-color: var(--ac);
+  background: #fde2dd;
+}
+
+/* Special full-page adoption mode — bigger, no title bar */
+body.adopting {
+  background: linear-gradient(#f4d3d8, #f9e6dc);
+}
+
+body.adopting .win {
+  border: 0;
+  border-radius: 24px;
+  max-width: 344px;
+  height: auto;
+  max-height: none;
+  background: #fff6f1;
+  box-shadow: 0 10px 30px #c0808040;
+}
+
+/* Hide the title bar on the adopt screen */
+body.adopting .tb {
+  display: none;
+}
+
+/* The adopt button gets a special pink color */
+#adoptBtn {
+  background: #f78b98 !important;
+  border-radius: 14px !important;
+}
+
+
+/* ------------------------------------------------------------
+   7. ROOM SCREEN (.room)
+   - The main pet room with a wall + floor effect
+   - Wall/floor split is done with a hard-stop linear-gradient
+   - ::before draws the window on the wall
+   - ::after draws the rug on the floor
+   — NO images used — all pure CSS!
+   ------------------------------------------------------------ */
+
+/* Room header bar showing pet name, level, coins */
+.hd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: #fdecd6;
+  font-weight: 800;
+}
+
+.hd .n  { font-size: 20px; }                          /* Pet name */
+.hd .lv { font-size: 14px; color: #6a79b8; margin-left: 8px; } /* Level badge */
+.hd .co { margin-left: auto; background: #fff; border-radius: 16px; padding: 2px 10px; font-size: 14px; } /* Coin counter */
+
+.room {
+  flex: 1;
+  position: relative;
+  /* Hard stop at 38% creates a sharp wall-to-floor divide */
+  background: linear-gradient(#cfe6ef 0 38%, #e8c79a 38% 100%);
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ::before = the picture window on the wall */
+.room::before {
+  content: "";
+  position: absolute;
+  left: 18%; top: 5%;
+  width: 40%; height: 34%;
+  background: #bfe3f3;
+  border: 5px solid #b98a5a;
+  border-radius: 6px;
+}
+
+/* ::after = the oval rug on the floor */
+.room::after {
+  content: "";
+  position: absolute;
+  left: 52%; top: 62%;
+  width: 52%; height: 26%;
+  margin-left: -26%;
+  background: #fbe9de;
+  border-radius: 50%;              /* Makes it an oval */
+  box-shadow: 0 0 0 6px #f1d8c4;  /* Rug border ring */
+}
+
+/* Left sidebar with action buttons */
+.side {
+  position: absolute;
+  left: 8px; top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 3;
+}
+
+.side button {
+  width: 56px;
+  height: 60px;
+  border-radius: 18px;
+  border: 2px solid #fff;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--tx);
+  box-shadow: 0 3px 0 #0002, 0 8px 12px #0002;
+  transition: transform .15s;
+  background: linear-gradient(#fff, #ffe9e4);
+}
+
+/* Hover: slide right and scale up slightly */
+.side button:hover  { transform: translateX(3px) scale(1.06); }
+/* Click: shrink slightly for a "press" feel */
+.side button:active { transform: scale(.9); }
+
+/* Each button icon (emoji) sits above its label */
+.side button span {
+  display: block;
+  font-size: 26px;
+  line-height: 30px;
+}
+
+/* Individual button color themes */
+.side button[data-a=feed]  { background: linear-gradient(#fff, #ffd9b3); }
+.side button[data-a=play]  { background: linear-gradient(#fff, #cfe8ff); }
+.side button[data-a=sleep] { background: linear-gradient(#fff, #e0d4ff); }
+.side button[data-a=bath]  { background: linear-gradient(#fff, #c4f1ee); }
+
+
+/* ------------------------------------------------------------
+   8. FLOATING EFFECTS (.fx, .bb)
+   - .bb = soap bubbles during bath
+   - .fx = floating emoji when feeding (e.g. 🍖 floats up)
+   - Both use the 'rise' keyframe animation
+   - radial-gradient on .bb simulates a shiny 3D bubble
+   ------------------------------------------------------------ */
+.fx {
+  position: absolute;
+  pointer-events: none; /* Clicks pass through it */
+  z-index: 6;
+}
+
+.bb {
+  position: absolute;
+  border-radius: 50%;
+  /* Off-center highlight at top-left gives a 3D shiny bubble look */
+  background: radial-gradient(circle at 30% 30%, #fff, #bfe9ff99);
+  border: 1px solid #fff;
+  animation: rise 1.8s forwards;
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* Bubble floats up, grows, and fades out */
+@keyframes rise {
+  from { transform: translateY(0) scale(.4); opacity: 1; }
+  to   { transform: translateY(-90px) scale(1.2); opacity: 0; }
+}
+
+
+/* ------------------------------------------------------------
+   9. FOOD SCREEN TABS (.tabs)
+   - Two tabs: Shop and Pantry
+   - Active tab gets the accent color background
+   ------------------------------------------------------------ */
+.tabs {
+  display: flex;
+  gap: 8px;
+  padding: 0 10px 10px;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 9px;
+  border-radius: 12px;
+  background: #fff;
+  font-weight: 800;
+  color: var(--tx);
+  border: 2px solid #eddad3;
+}
+
+/* The active tab gets filled with the accent color */
+.tabs button.on {
+  background: var(--ac);
+  color: #fff;
+  border-color: var(--ac);
+}
+
+/* "Owned: X" label shown in shop view */
+.fi .own {
+  font-size: 11px;
+  color: #8a6;
+  font-weight: 800;
+}
+
+/* "Feed ×N" button in pantry view */
+.fi .eat {
+  flex: none;
+  background: var(--ac);
+  color: #fff;
+  border-radius: 10px;
+  padding: 6px 14px;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+/* Empty pantry message */
+.em {
+  text-align: center;
+  padding: 40px 20px;
+  font-weight: 700;
+  opacity: .7;
+}
+
+
+/* ------------------------------------------------------------
+   10. PET SPRITE (#pet)
+   - Absolutely positioned in the room
+   - 'bob' animation makes the pet gently float up and down
+   - Only one keyframe at 50% is needed — CSS interpolates
+     the rest automatically (0%→50%→100%)
+   ------------------------------------------------------------ */
+#pet {
+  position: absolute;
+  left: 50%; top: 44%;
+  width: 150px;
+  margin-left: -70px;        /* Center it (half of width) */
+  z-index: 2;
+  cursor: pointer;
+  transition: left 1s, top 1s; /* Smooth wandering movement */
+}
+
+#pet svg {
+  width: 100%;
+  animation: bob 2s ease-in-out infinite;
+}
+
+/* Gentle up-down float: only define the midpoint */
+@keyframes bob {
+  50% { transform: translateY(-5px); }
+}
+
+
+/* ------------------------------------------------------------
+   11. SPEECH BUBBLE (.bub)
+   - White pill-shaped bubble with a soft shadow
+   - white-space:nowrap prevents text from line-breaking
+   - #0002 = black at ~12% opacity (4-digit hex shorthand)
+   ------------------------------------------------------------ */
+.bub {
+  position: absolute;
+  background: #fff;
+  border-radius: 16px;
+  padding: 7px 14px;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 2px 6px #0002;
+  white-space: nowrap;
+  z-index: 4;
+}
+
+/* Position the in-room speech bubble */
+#say { right: 14px; top: 22%; }
+
+
+/* ------------------------------------------------------------
+   12. STATS PANEL (.stats)
+   - Negative top-margin overlaps it over the room area
+   - Each stat row uses Flexbox with a progress bar track
+   - The fill <i> animates its width on JS update
+   ------------------------------------------------------------ */
+.stats {
+  background: #fffdf9;
+  border-radius: 12px;
+  margin: -96px 10px 10px; /* Negative margin overlaps the room */
+  position: relative;
+  z-index: 5;
+  padding: 8px 12px;
+  box-shadow: 0 2px 8px #0002;
+}
+
+/* One stat row (icon + label + bar + percentage) */
+.st {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  height: 23px;
+}
+
+.st em { font-style: normal; width: 20px; }  /* Emoji icon */
+.st u  { text-decoration: none; width: 66px; } /* Stat label */
+
+/* The grey track behind the coloured fill bar */
+.st .tr {
+  flex: 1;
+  height: 9px;
+  background: #eee;
+  border-radius: 5px;
+  overflow: hidden; /* Clips the fill to the track's rounded ends */
+}
+
+/* The coloured fill bar — width is set by JS, transition animates it */
+.st .tr i {
+  display: block;
+  height: 100%;
+  border-radius: 5px;
+  transition: width .5s; /* Smooth fill animation when stat changes */
+}
+
+.st s { text-decoration: none; width: 34px; text-align: right; } /* "XX%" text */
+
+
+/* ------------------------------------------------------------
+   13. FOOD SCREEN (#food)
+   - Uses position:absolute to overlay the full window
+   - z-index:20 puts it above everything else
+   ------------------------------------------------------------ */
+#food { padding: 0; }
+
+#food .fh {
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+  font-size: 19px;
+  font-weight: 800;
+  position: relative;
+}
+
+#food .fh b {
+  position: absolute;
+  right: 14px;
+  color: var(--ac);
+  cursor: pointer;
+}
+
+/* Scrollable food list area */
+.fl {
+  padding: 0 10px 10px;
+  overflow: auto;
+  flex: 1;
+}
+
+/* Individual food item card */
+.fi {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  border: 1px solid #f1dfd6;
+}
+
+.fi:active        { transform: scale(.98); }      /* Subtle press effect */
+.fi > span        { font-size: 32px; }             /* Food emoji */
+.fi div           { flex: 1; font-size: 12px; line-height: 1.4; font-weight: 600; }
+.fi div b         { font-size: 15px; display: block; }
+.fi .p            { flex: none; background: #fbe3a8; border-radius: 8px; padding: 4px 12px; font-weight: 800; font-size: 14px; }
+
+/* Positive stat effects shown in green, negative in red */
+.pos { color: #3a9a4a; }
+.neg { color: #d9534f; }
+
+/* Food screen overlays the whole window (above everything) */
+#food {
+  position: absolute;
+  inset: 34px 0 0; /* Top = title bar height, covers the rest */
+  background: var(--win);
+  z-index: 20;
+}
+
+
+/* ------------------------------------------------------------
+   14. GAME SCREEN (#game)
+   - Sky-to-grass gradient background
+   - touch-action:none prevents scroll interference on mobile
+   ------------------------------------------------------------ */
+#game {
+  /* Hard stop at 40%: sky above, grass below */
+  background: linear-gradient(#7fd0f5, #bfe9fb 40%, #7ccb5a 40%);
+  overflow: hidden;
+  touch-action: none; /* Prevents the page from scrolling while playing */
+}
+
+#game h2 {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 22px;
+}
+
+/* Score and Timer pill badges */
+.pill {
+  background: #fffc; /* White at ~80% opacity */
+  border-radius: 8px;
+  padding: 4px 16px;
+  font-weight: 800;
+  font-size: 15px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%); /* Horizontally centered using transform trick */
+}
+
+/* The falling ball */
+#ball {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  /* Radial gradient gives the ball a shiny 3D look */
+  background: radial-gradient(circle at 35% 30%, #ff9ab0, #e8335d);
+}
+
+/* The pet catcher at the bottom */
+#gp {
+  position: absolute;
+  bottom: 30px;
+  width: 110px;
+  margin-left: -55px; /* Centers it on its JS-controlled left position */
+}
+
+
+/* ------------------------------------------------------------
+   15. SLEEP SCREEN (#sleep)
+   - Dark purple gradient for a night-time feel
+   - The 'z Z' text uses the same bob animation as the pet
+   ------------------------------------------------------------ */
+#sleep {
+  background: linear-gradient(#2c2c5a, #4a3f66);
+  color: #fff;
+  align-items: center;
+  padding: 20px 14px;
+  gap: 12px;
+}
+
+#sleep .moon { font-size: 30px; align-self: flex-start; }
+
+/* The floating "z Z" snoring indicator */
+#sleep .z {
+  position: absolute;
+  right: 60px; top: 90px;
+  font-size: 26px;
+  font-weight: 900;
+  animation: bob 2s infinite; /* Reuses the same bob keyframe */
+}
+
+/* White info card (e.g. "Sleeping... Energy +5 every few seconds") */
+.card {
+  background: #fffaf6;
+  color: var(--tx);
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  width: 100%;
+  font-weight: 700;
+}
+
+/* Energy progress bar track */
+.pb {
+  height: 9px;
+  background: #e5dcf0;
+  border-radius: 5px;
+  margin: 12px 6px;
+  overflow: hidden;
+}
+
+/* Energy bar fill — purple gradient, width updated by JS */
+.pb i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #8a63d2, #b48be8);
+  transition: width .5s;
+}
+
+
+/* ------------------------------------------------------------
+   16. MINI (DESKTOP PET) MODE (#mini)
+   - When minimized, the full .win is hidden
+   - Only the small floating #mini pet is shown
+   - position:fixed keeps it pinned on screen
+   - cursor:grab / grabbing for drag UX feedback
+   ------------------------------------------------------------ */
+#mini {
+  position: fixed;
+  display: none;       /* Hidden by default */
+  z-index: 99;
+  width: 120px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;   /* Prevents text selection while dragging */
+}
+
+#mini svg {
+  width: 100%;
+  filter: drop-shadow(0 4px 4px #0006); /* Shadow under the floating pet */
+}
+
+/* Mini speech bubble (shown above the pet) */
+#mini .bub {
+  right: 20px;
+  top: -30px;
+  font-size: 13px;
+}
+
+/* Switch between full window and mini pet */
+body.mini .win  { display: none;  } /* Hide full window */
+body.mini #mini { display: block; } /* Show mini pet */
+
+
+/* ------------------------------------------------------------
+   17. DESKTOP HINT & TOAST NOTIFICATION
+   ------------------------------------------------------------ */
+
+/* "Click to open main window" hint shown in mini mode */
+#hint {
+  position: fixed;
+  right: 26px; bottom: 30px;
+  color: #fff;
+  font-weight: 700;
+  display: none;       /* Hidden by default */
+  text-align: right;
+}
+
+body.mini #hint { display: block; } /* Only shown in mini mode */
+
+/* Pop-up toast message (e.g. "+50 coins!") */
+#toast {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%); /* Center horizontally */
+  background: #4a3238;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  opacity: 0;           /* Hidden — JS sets opacity:1 to show it */
+  transition: .3s;
+  pointer-events: none; /* Clicks pass through */
+  z-index: 200;
+}
+
+
+/* ============================================================
+   18. ELECTRON DESKTOP APP OVERRIDES
+   - When running as an actual desktop app (not browser)
+   - body gets the 'electron' class from JS
+   - background:transparent makes the window frameless
+     (works with Electron's transparent:true window option)
+   - -webkit-app-region:drag makes areas draggable as
+     the OS window title bar (Electron-specific CSS property)
+   ============================================================ */
+body.electron,
+body.electron.adopting,
+body.electron.mini {
+  background: transparent; /* See-through so pet floats on desktop */
+}
+
+/* Hide the hint text in desktop app (it's only for browser demo) */
+body.electron #hint {
+  display: none !important;
+}
+
+/* Make the title bar and adopt screen draggable as a window */
+body.electron .tb,
+body.electron #adopt {
+  -webkit-app-region: drag;
+}
+
+/* Buttons/inputs inside draggable areas must be marked no-drag */
+body.electron .tb b,
+body.electron #adopt input,
+body.electron #adopt button,
+body.electron .pick {
+  -webkit-app-region: no-drag;
+}
+
+body.electron.adopting .win {
+  box-shadow: 0 10px 30px #8a4a5a55;
+}
+
+
+/* ============================================================
+   19. WATERMARK
+   - position:fixed anchors it to the viewport corner always
+   - pointer-events:none = purely visual, clicks pass through
+   - opacity:.28 = subtle, non-intrusive
+   - Hidden in mini mode and adopt screen
+   ============================================================ */
+#watermark {
+  position: fixed;
+  bottom: 8px;
+  right: 14px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--tx);
+  opacity: .28;
+  letter-spacing: .4px;
+  pointer-events: none; /* Never blocks any interaction */
+  z-index: 100;
+  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Hide watermark when in floating mini-pet mode */
+body.mini #watermark { display: none; }
+
+/* Hide watermark on the adoption screen */
+body.adopting #watermark { display: none; }

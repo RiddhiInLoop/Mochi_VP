@@ -1,0 +1,45 @@
+{
+  "name": "mochi-desktop-pet",
+  "version": "1.1.0",
+  "description": "Mochi - a virtual desktop pet built with Electron. Adopt, feed, play and care for your pet right on your desktop!",
+  "main": "main.js",
+  "author": "RiddhiInLoop",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RiddhiInLoop/mochi-desktop-pet"
+  },
+  "keywords": [
+    "desktop-pet",
+    "electron",
+    "virtual-pet",
+    "tamagotchi",
+    "mochi"
+  ],
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^44.5.1",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.mochi.desktoppet",
+    "productName": "Mochi",
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*"
+    ],
+    "win": {
+      "target": "portable"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  }
+}

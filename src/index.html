@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Mochi – Desktop Pet</title>
+
+  <!--
+    viewport-fit=cover ensures the app fills the full screen
+    on notched phones (like iPhone) without white gaps
+  -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- Our single stylesheet — all styling is in here -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<!--
+  body starts with class="adopting" so the adoption screen
+  styling is active on first load (full-page pastel gradient, no title bar)
+-->
+<body class="adopting">
+
+
+  <!-- ============================================================
+       MAIN WINDOW CARD (.win)
+       This is the container that looks like an app window.
+       All five screens live inside here.
+       ============================================================ -->
+  <div class="win" id="win">
+
+
+    <!-- ----------------------------------------------------------
+         TITLE BAR (.tb)
+         The three <i> tags are the decorative macOS-style dots.
+         #bMin = Minimize button (▾) → switches to mini/desktop-pet mode
+         #bX   = Reset button (✕)  → clears save data and restarts
+         ---------------------------------------------------------- -->
+    <div class="tb">
+      <i></i><i></i><i></i>
+      <b id="bMin" title="Minimize to desktop pet">▾</b>
+      <b id="bX"   title="Reset">✕</b>
+    </div>
+
+
+    <!-- ==========================================================
+         SCREEN 1 — ADOPT SCREEN (#adopt)
+         Shown on first launch. Has class="scr on" so it's visible.
+         All other screens only have class="scr" (hidden).
+         JS switches screens by adding/removing the "on" class.
+         ========================================================== -->
+    <div class="scr on" id="adopt">
+
+      <!-- Pet SVG preview (populated by JS) -->
+      <div id="prev" style="width:130px; margin-top:6px"></div>
+
+      <h1>🐾 WELCOME! 🐾</h1>
+      <div style="opacity:.7; margin-bottom:6px">Meet your new pet!</div>
+
+      <b style="margin-top:2px; align-self:flex-start">What should we call them?</b>
+
+      <!-- Pet name input — default value "Mochi", max 12 characters -->
+      <input id="nm" value="Mochi" maxlength="12">
+
+      <b>Choose your pet</b>
+
+      <!-- Pet-type picker — JS fills this with one card per pet type -->
+      <div class="pick" id="pick"></div>
+
+      <!-- The big ADOPT button — JS listens for click and creates the pet -->
+      <button class="big" id="adoptBtn" style="width:100%; margin:6px 0 0">ADOPT</button>
+
+    </div><!-- end #adopt -->
+
+
+    <!-- ==========================================================
+         SCREEN 2 — ROOM SCREEN (#room)
+         The main screen showing the pet in its room.
+         Contains: header bar, room area, action buttons, stats panel.
+         ========================================================== -->
+    <div class="scr" id="room">
+
+      <!-- Header bar: pet name, level, coin count -->
+      <div class="hd">
+        <span>🐾</span>
+        <span class="n" id="hn">Mochi</span>   <!-- Pet name (JS updates this) -->
+        <span style="color:#f26b8a">♥</span>
+        <span class="lv" id="lv">Lv. 1</span>  <!-- Level (JS updates this) -->
+        <span class="co" id="co">🪙 1,250</span> <!-- Coins (JS updates this) -->
+      </div>
+
+      <!-- The room area: wall + floor background, buttons, pet, speech bubble -->
+      <div class="room" id="rm">
+
+        <!--
+          Action buttons on the left sidebar.
+          Each button has data-a="feed/play/sleep/bath"
+          JS reads data-a to know which action was clicked.
+        -->
+        <div class="side">
+          <button data-a="feed"><span>🍖</span>Feed</button>
+          <button data-a="play"><span>🎾</span>Play</button>
+          <button data-a="sleep"><span>🌙</span>Sleep</button>
+          <button data-a="bath"><span>🛁</span>Bath</button>
+        </div>
+
+        <!-- Speech bubble — JS updates the text based on pet's mood -->
+        <div class="bub" id="say">I'm hungry!</div>
+
+        <!-- Pet SVG container — JS injects the correct SVG here -->
+        <div id="pet"></div>
+
+      </div><!-- end .room -->
+
+      <!-- Stats panel: Hunger / Energy / Happiness / Cleanliness / Health bars -->
+      <!-- JS builds this dynamically using the ST array -->
+      <div class="stats" id="stats"></div>
+
+    </div><!-- end #room -->
+
+
+    <!-- ==========================================================
+         SCREEN 3 — FOOD SCREEN (#food)
+         Overlays the window when Feed is clicked.
+         Has two tabs: Shop (buy food) and Pantry (feed from inventory).
+         ========================================================== -->
+    <div class="scr" id="food">
+
+      <!-- Header: wallet balance + close button -->
+      <div class="fh">
+        <span id="wal" style="position:absolute; left:14px; font-size:14px; background:#fbe3a8; border-radius:12px; padding:2px 10px"></span>
+        Food
+        <b id="fx">✕</b> <!-- Close button -->
+      </div>
+
+      <!-- Tab buttons: Shop / Pantry -->
+      <div class="tabs">
+        <button id="t1">🛒 Shop</button>
+        <button id="t2">🎒 Pantry</button>
+      </div>
+
+      <!-- Food list — JS fills this with food item cards -->
+      <div class="fl" id="fl"></div>
+
+    </div><!-- end #food -->
+
+
+    <!-- ==========================================================
+         SCREEN 4 — GAME SCREEN (#game)
+         The "Catch the Ball!" mini-game.
+         The ball (#ball) falls and JS moves it via style.top.
+         The pet catcher (#gp) follows the mouse/touch via style.left.
+         ========================================================== -->
+    <div class="scr" id="game">
+
+      <h2>Catch the Ball!</h2>
+
+      <!-- Score and timer — JS updates their text content -->
+      <div class="pill" style="top:62px"  id="gs">Score: 0</div>
+      <div class="pill" style="top:100px" id="gt">Time: 30s</div>
+
+      <!-- The falling ball (JS moves it every 30ms) -->
+      <div id="ball"></div>
+
+      <!-- The pet catcher at the bottom (JS positions it with the mouse/touch X) -->
+      <div id="gp"></div>
+
+    </div><!-- end #game -->
+
+
+    <!-- ==========================================================
+         SCREEN 5 — SLEEP SCREEN (#sleep)
+         Shown when the Sleep button is clicked.
+         Energy bar fills up over time while sleeping.
+         "GOOD MORNING!" card appears when energy is full.
+         ========================================================== -->
+    <div class="scr" id="sleep">
+
+      <div class="moon">🌙</div>
+      <div class="z">z Z</div> <!-- Floating snoring animation -->
+
+      <!-- Pet SVG in sleep pose (JS injects this) -->
+      <div id="sp" style="width:200px; margin-top:60px"></div>
+
+      <!-- Sleeping info card with energy progress bar -->
+      <div class="card" style="margin-top:auto">
+        Sleeping...
+        <div class="pb">
+          <i id="sb"></i> <!-- Energy bar fill — JS sets its width -->
+        </div>
+        <small style="font-weight:600">Energy +5 every few seconds</small>
+      </div>
+
+      <!-- Wake-up card — JS shows this when energy reaches 100 -->
+      <div class="card" id="wake" style="cursor:pointer">
+        ☀️ GOOD MORNING!<br>
+        <small style="font-weight:600" id="wt">Tap to wake up</small>
+      </div>
+
+    </div><!-- end #sleep -->
+
+  </div><!-- end .win -->
+
+
+  <!-- ============================================================
+       MINI PET (#mini)
+       This is the small floating pet shown in desktop-pet mode.
+       It's hidden by default (display:none in CSS).
+       When the user clicks ▾ (Minimize), JS adds class="mini"
+       to body, which hides .win and shows #mini instead.
+       The pet is draggable — JS uses Pointer Events API for this.
+       ============================================================ -->
+  <div id="mini">
+    <div class="bub" id="mb">I'm hungry!</div> <!-- Mini speech bubble -->
+    <div id="mp"></div>                         <!-- Mini pet SVG (JS injects) -->
+  </div>
+
+
+  <!-- ============================================================
+       UTILITY ELEMENTS
+       ============================================================ -->
+
+  <!-- "Click to open main window" — only visible in mini mode -->
+  <div id="hint">Click to open<br>main window</div>
+
+  <!-- Toast notification (e.g. "+50 coins!") — JS shows/hides via opacity -->
+  <div id="toast"></div>
+
+  <!-- Watermark — subtle credit in the bottom-right corner -->
+  <div id="watermark">Made by @RiddhiInLoop</div>
+
+
+  <!-- ============================================================
+       SCRIPTS
+       pets.js must load FIRST because it defines the svg() function
+       and TY (pet types) object that app.js depends on.
+       ============================================================ -->
+  <script src="js/pets.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
