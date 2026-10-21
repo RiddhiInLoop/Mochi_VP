@@ -2,7 +2,7 @@
 
 A cute virtual pet that lives right on your desktop, built with Electron. Adopt your pet, keep it fed and happy, play mini-games, and watch it wander around your screen!
 
-> Made by [@RiddhiInLoop](https://github.com/RiddhiInLoop)
+> Made by [@RiddhiInLoop](https://github.com/RiddhiInLoop) • [⭐ Star on GitHub](https://github.com/RiddhiInLoop/Mochi_VP)
 
 ---
 
@@ -39,8 +39,8 @@ A cute virtual pet that lives right on your desktop, built with Electron. Adopt 
 
 ```bash
 # Clone the repo
-git clone https://github.com/RiddhiInLoop/mochi-desktop-pet.git
-cd mochi-desktop-pet
+git clone https://github.com/RiddhiInLoop/Mochi_VP.git
+cd Mochi_VP
 
 # Install dependencies
 npm install
