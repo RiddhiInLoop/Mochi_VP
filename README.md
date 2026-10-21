@@ -1,9 +1,6 @@
 # 🐾 Mochi — Desktop Pet
 
 A cute virtual pet that lives right on your desktop, built with Electron. Adopt your pet, keep it fed and happy, play mini-games, and watch it wander around your screen!
-
-> Made by [@RiddhiInLoop](https://github.com/RiddhiInLoop) • [⭐ Star on GitHub](https://github.com/RiddhiInLoop/Mochi_VP)
-
 ---
 
 ## ✨ Features
@@ -21,10 +18,10 @@ A cute virtual pet that lives right on your desktop, built with Electron. Adopt 
 
 ---
 
-## 🖥️ Screenshots
+## 🖥️ 
 
-> _Add your screenshots here!_
-> Drag images into this section or replace these lines with `![Alt text](screenshots/name.png)`
+<img width="1536" height="1024" alt="WhatsApp Image 2026-10-06 at 2 08 39 PM" src="https://github.com/user-attachments/assets/f500c3cf-beda-423e-9c50-d2e58e353420" />
+
 
 ---
 
@@ -113,6 +110,3 @@ mochi-electron/
 
 ---
 
-## 📄 License
-
-MIT © [RiddhiInLoop](https://github.com/RiddhiInLoop)
